@@ -7,7 +7,11 @@ targets:
   FermeReveil:
     type: application
     platform: iOS
-    sources: [FermeReveil]
+    targets:
+    sources:
+      - path: FermeReveil
+        excludes:
+          - "Package.swift"
     info:
       path: FermeReveil/Info.plist
       properties:
