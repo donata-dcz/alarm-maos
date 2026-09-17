@@ -6,6 +6,9 @@ let package = Package(
     platforms: [
         .iOS(.v26)
     ],
+    products: [
+        .library(name: "AlarmCore", targets: ["AlarmCore"])   // <- manquant
+    ],
     targets: [
         .target(
             name: "AlarmCore",
