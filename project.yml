@@ -9,7 +9,7 @@ targets:
     platform: iOS
     targets:
     sources:
-      - path: FermeReveil
+      - path: FermeReveil/FermeReveil
         excludes:
           - "Package.swift"
     info:
