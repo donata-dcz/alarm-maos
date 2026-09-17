@@ -3,17 +3,22 @@ options:
   bundleIdPrefix: com.exemple
   deploymentTarget:
     iOS: "26.0"
+
+packages:
+  AlarmCore:
+    path: FermeReveil/FermeReveil
+
 targets:
   FermeReveil:
     type: application
     platform: iOS
     sources:
-      - path: FermeReveil/FermeReveil
-        excludes:
-          - "Tests"
-          - "Package.swift"
+      - path: FermeReveil/FermeReveilApp
+    dependencies:
+      - package: AlarmCore
+        product: AlarmCore
     info:
-      path: FermeReveil/Info.plist
+      path: FermeReveil/FermeReveilApp/Info.plist
       properties:
         UILaunchScreen: {}
     settings:
