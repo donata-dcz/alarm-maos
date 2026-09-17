@@ -7,7 +7,6 @@ targets:
   FermeReveil:
     type: application
     platform: iOS
-    targets:
     sources:
       - path: FermeReveil/FermeReveil
         excludes:
