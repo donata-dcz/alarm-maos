@@ -1,0 +1,84 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    # Runner macOS hébergé par GitHub — c'est LUI qui a Xcode, pas toi.
+    runs-on: macos-15
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      # ⚠️ À ajuster : vérifier la version d'Xcode réellement disponible
+      # sur le runner macos-15 au moment où tu lances ce workflow
+      # (elle évolue avec le temps). AlarmKit exige Xcode 26+.
+      # Si la version demandée n'existe pas sur l'image, l'étape échoue
+      # avec la liste des versions disponibles — ajuster xcode-version
+      # en conséquence.
+      - name: Sélectionner Xcode 26
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "26.0"
+
+      - name: Installer XcodeGen
+        run: brew install xcodegen
+
+      - name: Générer le projet Xcode
+        run: xcodegen generate
+
+      - name: Lister les simulateurs disponibles (debug)
+        run: xcrun simctl list devices available
+
+      # ⚠️ À ajuster : le nom exact du simulateur ("iPhone 16" ici) doit
+      # correspondre à un device réellement disponible sur le runner —
+      # vérifier la sortie de l'étape précédente et corriger si besoin.
+      - name: Compiler pour le simulateur iOS
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project FermeReveil.xcodeproj \
+            -scheme FermeReveil \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcpretty || true
+
+      - name: Lancer l'app dans le simulateur et capturer une image
+        run: |
+          set -e
+          DEVICE="iPhone 16"
+          APP_PATH="build/Build/Products/Debug-iphonesimulator/FermeReveil.app"
+          BUNDLE_ID="com.exemple.fermereveil"
+
+          xcrun simctl boot "$DEVICE" || true
+          xcrun simctl bootstatus "$DEVICE" -b
+
+          xcrun simctl install "$DEVICE" "$APP_PATH"
+          xcrun simctl launch "$DEVICE" "$BUNDLE_ID"
+
+          # Laisser le temps à SwiftUI de finir son premier rendu
+          sleep 5
+
+          mkdir -p screenshots
+          xcrun simctl io "$DEVICE" screenshot screenshots/ecran_principal.png
+
+      - name: Publier la capture d'écran
+        uses: actions/upload-artifact@v4
+        with:
+          name: capture-ecran-principal
+          path: screenshots/*.png
+
+  # NOTE IMPORTANTE :
+  # Cette CI valide la compilation ET donne un aperçu visuel réel via
+  # simulateur (voir l'artefact "capture-ecran-principal" téléchargeable
+  # depuis l'onglet Actions du run). Elle ne peut PAS valider le jalon
+  # de fiabilité (déclenchement réel de l'alarme, comportement écran
+  # verrouillé/silencieux/Concentration/redémarrage) qui nécessite un
+  # iPhone physique et une session interactive.
+  # Voir TESTS_CHECKLIST.md — cette étape reste à faire à la main.
