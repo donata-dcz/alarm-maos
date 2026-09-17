@@ -2,13 +2,20 @@ import SwiftUI
 import AlarmCore
 
 struct ContentView: View {
+    @State private var current: Alarm = .timer(duration: 300)
+
     var body: some View {
-        List(Alarm.defaultAlarm) { alarm in
-            VStack(alignment: .leading) {
-                Text(alarm.label)
-                Text(alarm.date, style: .time)
+        VStack(spacing: 16) {
+            Text(current.kind == .alarm ? "Réveil" : "Minuterie")
+                .font(.headline)
+            Text(current.label)
+            if current.kind == .timer {
+                Text("\(Int(current.timeRemaining)) s restantes")
+            } else {
+                Text(current.fireDate, style: .time)
             }
         }
+        .padding()
     }
 }
 
