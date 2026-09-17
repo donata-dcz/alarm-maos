@@ -1,0 +1,17 @@
+name: FermeReveil
+options:
+  bundleIdPrefix: com.exemple
+  deploymentTarget:
+    iOS: "26.0"
+targets:
+  FermeReveil:
+    type: application
+    platform: iOS
+    sources: [FermeReveil]
+    info:
+      path: FermeReveil/Info.plist
+      properties:
+        UILaunchScreen: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.exemple.fermereveil
