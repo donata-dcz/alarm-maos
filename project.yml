@@ -11,6 +11,7 @@ targets:
     sources:
       - path: FermeReveil/FermeReveil
         excludes:
+          - "Tests"
           - "Package.swift"
     info:
       path: FermeReveil/Info.plist
