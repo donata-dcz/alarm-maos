@@ -46,8 +46,7 @@ jobs:
             -scheme FermeReveil \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
             -derivedDataPath build \
-            CODE_SIGNING_ALLOWED=NO \
-            | xcpretty
+            CODE_SIGNING_ALLOWED=NO
 
       - name: Lancer l'app dans le simulateur et capturer une image
         run: |
